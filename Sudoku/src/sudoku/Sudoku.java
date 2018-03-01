@@ -53,7 +53,7 @@ public class Sudoku<E> {
 			}
 			System.out.print("\n");
 		}
-	}
+	} 
 	
 	public boolean solve() {
 		for (ArrayList<E> a : matrix) {
