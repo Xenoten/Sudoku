@@ -43,6 +43,22 @@ public class Sudoku<E> {
 		return result;
 	}
 	
+	public boolean works (E arg, int col, int row) {
+		boolean result = true;
+		matrix.get(col).set(row, arg);
+		for (int i = 0; i<9; i++) {
+			if(matrix.get(col).get(i) == arg) {
+				result = false;
+			}
+		}
+		for (int i = 0; i<9; i++) {
+			if(matrix.get(i).get(row) == arg) {
+				result = false;
+			}
+		}
+		return result;
+	}
+	
 	public void show () {
 		for (ArrayList<E> a : matrix) {
 			for (E e :  a) {
