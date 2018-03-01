@@ -52,7 +52,7 @@ public class Sudoku<E> {
 				else System.out.print("  ");
 			}
 			System.out.print("\n");
-		}  
+		}
 	}
 	
 	public boolean solve() {
