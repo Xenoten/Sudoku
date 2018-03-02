@@ -14,6 +14,9 @@ public class Main {
 		spel.set(1, 6, 6);
 		spel.set(1, 7, 7);
 		spel.show();
+		System.out.println(spel.works(1, 2, 2));
+		spel.solve(0, 0);
+		spel.show();
 
 	}
 
