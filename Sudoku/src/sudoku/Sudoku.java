@@ -11,6 +11,8 @@ public class Sudoku<E> {
 	private boolean solved = false;
 	private boolean solvable = true;
 	
+	/* constructor */
+	
 	public Sudoku() {
 		matrix = new ArrayList<ArrayList<Integer>>();
 		for (int i = 0 ; i < 9; i++) {
@@ -19,18 +21,35 @@ public class Sudoku<E> {
 		}
 	}
 	
+	/**
+	 * Gets value at selected coordinates.
+	 * @param col index of column
+	 * @param row index of row
+	 * @return value of selected row and column
+	 */
+	
 	public int get (int col, int row) {
 		return matrix.get(row-1).get(col-1);
 	}
 	
+	/**
+	 * sets a value at specified coordinate
+	 * @param arg the value to be inserted
+	 * @param col index of column
+	 * @param row index of row
+	 * @return returns true
+	 */
+	
 	public boolean set (int arg, int col, int row) {
-//		if (matrix.isEmpty()) {
-//			 ArrayList<E> e = new ArrayList<E>(9);
-//			matrix.add(e);
-//		}
+
 		matrix.get(row-1).set(col-1, arg);
 		return true;
 	}
+	
+	/**
+	 * Evaluates whether or not the sudoku is filled or not.
+	 * @return true if 9 unique values are present, none of which are zero. otherwise false.
+	 */
 	
 	public boolean isSolved () {
 		boolean result = true;
@@ -41,7 +60,7 @@ public class Sudoku<E> {
 				temp.add(e);
 				}
 			
-			//System.out.println(temp.size());
+			
 			if (temp.size() != 9 || temp.contains(0)) {
 				result = false;
 			}
@@ -58,6 +77,14 @@ public class Sudoku<E> {
 		}
 		return result;
 	}
+	
+	/**
+	 * evaluates if specified value could be placed at designated coordinates according to sudoku rules.
+	 * @param arg specified value
+	 * @param col index of column
+	 * @param row index of row
+	 * @return false if insertion would break sudoku rules, otherwise true.
+	 */
 	
 	public boolean works (int arg, int col, int row) {
 		System.out.println(col + " "+ row);
@@ -95,17 +122,33 @@ public class Sudoku<E> {
 		return result;
 	}
 	
+	/**
+	 * prints current sudoku in terminal as text. testing purposes only.
+	 */
+	
 	public void show () {
 		for (ArrayList<Integer> a : matrix) {
 			for (int e :  a) {
-				//if (e != 0) {
+				
 				System.out.print(e);
-				//}
-				//else System.out.print("  ");
+			
 			}
 			System.out.print("\n");
 		}
 	} 
+	
+	/**
+	 * recursive method.
+	 * evaluates isSolved() and stops recursion if true.
+	 * if pre-existing value is found, evaluates whether it is in accordance to the rules using works().
+	 * continues recursion if true, stops and sets solvable = false if false.
+	 * if no value found and solvable is true, attempts to set value from 1-9 according to works().
+	 * recurses with next row or column if true.
+	 * returns false if no value 1-9 for works() returns true, resulting in backtracking.
+	 * @param col index of column.
+	 * @param row index of row.
+	 * @return true if solved false if not.
+	 */
 	
 	public boolean solve(int col, int row) {
 		boolean result = false;
@@ -113,7 +156,7 @@ public class Sudoku<E> {
 		int ncol= col;
 		int nrow = row +1;
 		if(nrow == 10) {ncol++; nrow = 1;}
-		//System.out.println(ncol + " " + nrow);
+		
 		
 		if(isSolved()) {
 			solved = true;
@@ -138,7 +181,7 @@ public class Sudoku<E> {
 			for (int i = 1; i<10; i++) {
 				if(works(i, col, row) && solvable) {
 					set(i, col, row);
-					//System.out.println("det fungerar" + i);
+					
 					if(solve(ncol, nrow)){
 						result = true;
 					}
