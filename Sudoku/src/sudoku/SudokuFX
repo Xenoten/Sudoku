@@ -1,0 +1,33 @@
+package sudoku;
+
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.layout.TilePane;
+import javafx.stage.Stage;
+
+public class SudokuFX extends Application {
+
+	
+	
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		TilePane root = new TilePane();
+		root.setHgap(0);
+		root.setPrefColumns(9);
+		for (int i = 0; i < 9; i++){
+			root.getChildren(); 
+		}
+		
+		Scene scene = new Scene(root, 500, 500);
+		primaryStage.setTitle("Sudoku");
+		primaryStage.setScene(scene);
+		primaryStage.show();
+
+	}
+
+	public static void main(String[] args) {
+		Application.launch(args);
+
+	}
+
+}
