@@ -1,3 +1,4 @@
+
 package sudoku;
 
 import java.util.ArrayList;
@@ -7,6 +8,8 @@ import java.util.Set;
 
 public class Sudoku<E> {
 	ArrayList<ArrayList<Integer>> matrix;
+	private boolean solved = false;
+	private boolean solvable = true;
 	
 	public Sudoku() {
 		matrix = new ArrayList<ArrayList<Integer>>();
@@ -17,7 +20,7 @@ public class Sudoku<E> {
 	}
 	
 	public int get (int col, int row) {
-		return matrix.get(col).get(row);
+		return matrix.get(row-1).get(col-1);
 	}
 	
 	public boolean set (int arg, int col, int row) {
@@ -25,69 +28,65 @@ public class Sudoku<E> {
 //			 ArrayList<E> e = new ArrayList<E>(9);
 //			matrix.add(e);
 //		}
-		matrix.get(col).add(row, arg);
+		matrix.get(row-1).set(col-1, arg);
 		return true;
 	}
 	
 	public boolean isSolved () {
 		boolean result = true;
+		
 		for (ArrayList<Integer> a : matrix) {
 			Set<Integer> temp = new HashSet();
 			for (int e :  a) {
 				temp.add(e);
 				}
-			System.out.println(temp.size());
-				if (temp.size() != 9) {
+			
+			//System.out.println(temp.size());
+			if (temp.size() != 9 || temp.contains(0)) {
 				result = false;
-				}
 			}
+		}
+		
+		for (int i = 0; i < 9; i++){
+			Set<Integer> temp2 = new HashSet();
+			for(ArrayList<Integer> t: matrix){
+				temp2.add(t.get(i));
+			}
+			if (temp2.size() != 9 || temp2.contains(0)) {
+				result = false;
+			}
+		}
 		return result;
 	}
 	
 	public boolean works (int arg, int col, int row) {
+		System.out.println(col + " "+ row);
 		boolean result = true;
-		//matrix.get(col).set(row, arg);
-		for (int i = 0; i<9; i++) {
-			
-				if(matrix.get(col).get(i).equals(arg)) {
+		
+		for (int i = 1; i < 10; i++) {
+				if(get(col, i) == arg) {
 					result = false;
-//					System.out.print(col);
-//					System.out.print(row);
 				}
-			
-			
 		}
 		
-		for (int i = 0; i<9; i++) {
-			if(matrix.get(i).get(row) != null) {
-				if(matrix.get(i).get(row).equals(arg)) {
-				result = false;
-//				System.out.print(col);
-//				System.out.print(row);
+		for (int i = 1; i<10; i++) {
+				if(get(i, row) == arg) {
+					result = false;
 				}
-			}
-			
 		}
 		
-		int ncol = 0;
-		int nrow = 0;
-		if((col != 0) && (row != 0)) {
-		if(col%3 == 2){ncol = col - 1;}
-		if(col%3 == 1){ncol = col;}
-		if(col%3 == 0){ncol = col - 2;}
-		if(row%3 == 2){nrow = row - 1;}
-		if(row%3 == 1){nrow = row;}
-		if(row%3 == 0){nrow = row - 2;}
-		}
-		for ( int i = ncol; i < ncol+2; i++ ) {
-			for (int j = nrow; j < nrow+2; j++) {
-//					System.out.println(i);
-//					System.out.println(j);
-//					System.out.println(arg);
-					if(matrix.get(i).get(j).equals(arg)) {
+		int ncol = col - 1;
+		int nrow = row - 1;
+		if(ncol%3 == 2){ncol = ncol - 2;}
+		if(ncol%3 == 1){ncol = ncol - 1;}
+		if(ncol%3 == 0){ncol = ncol;}
+		if(nrow%3 == 2){nrow = nrow - 2;}
+		if(nrow%3 == 1){nrow = nrow - 1;}
+		if(nrow%3 == 0){nrow = nrow;}
+		for ( int i = ncol; i < ncol+3; i++ ) {
+			for (int j = nrow; j < nrow+3; j++) {
+					if(get(i+1, j+1) == arg) {
 					result = false;
-//					System.out.print(i);
-//					System.out.print(j);
 					}
 				}
 				
@@ -99,34 +98,62 @@ public class Sudoku<E> {
 	public void show () {
 		for (ArrayList<Integer> a : matrix) {
 			for (int e :  a) {
-				if (e != 0) {
+				//if (e != 0) {
 				System.out.print(e);
-				}
-				else System.out.print("  ");
+				//}
+				//else System.out.print("  ");
 			}
 			System.out.print("\n");
 		}
 	} 
 	
 	public boolean solve(int col, int row) {
+		boolean result = false;
+		
+		int ncol= col;
+		int nrow = row +1;
+		if(nrow == 10) {ncol++; nrow = 1;}
+		//System.out.println(ncol + " " + nrow);
+		
 		if(isSolved()) {
+			solved = true;
 			return true;
 		}
 		
-		for (int i = 0; i<9; i++) {
+		else if (get(col, row) != 0) {
 			int temp = get(col, row);
-			if(works(i, col, row)) {
-				set(i, col, row);
-				int ncol= col;
-				int nrow = row;
-				if(row == 8) {ncol++; nrow = 0;}
-				if(solve(ncol, nrow)) {
-				return true;
-				}
+			set(0, col, row);
+			if (works(temp, col, row)){
+				set(temp, col, row);
+				return solve(ncol, nrow);
 			}
-			set(temp, col, row);
+			else {
+				set(temp,col,row);
+				solvable = false;
+				return false;
+			}
 		}
-		return false;
+		
+		else {
+			for (int i = 1; i<10; i++) {
+				if(works(i, col, row) && solvable) {
+					set(i, col, row);
+					//System.out.println("det fungerar" + i);
+					if(solve(ncol, nrow)){
+						result = true;
+					}
+					else if (i == 9 && !solved){
+						set(0, col, row);
+					}
+				}
+				else if (i == 9 && !solved){
+					set(0, col, row);
+				}
+				
+			}
+		
+		}
+		return result;
 	}
 	
 	
