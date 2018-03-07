@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class Sudoku<E> {
 	ArrayList<ArrayList<Integer>> matrix;
-	private boolean solved = false;
+	private boolean solverd = false;
 	private boolean solvable = true;
 	
 	/* constructor */
@@ -29,7 +29,7 @@ public class Sudoku<E> {
 	 */
 	
 	public int get (int col, int row) {
-		return matrix.get(row-1).get(col-1);
+		return matrix.get(row).get(col);
 	}
 	
 	/**
@@ -42,8 +42,22 @@ public class Sudoku<E> {
 	
 	public boolean set (int arg, int col, int row) {
 
-		matrix.get(row-1).set(col-1, arg);
+		matrix.get(row).set(col, arg);
 		return true;
+	}
+	
+	/**
+	 * sets all values in matrix to 0.
+	 */
+	
+	public void reset(){
+		for (int i = 0; i < 9; i++){
+			for(int j = 0; j <9; j++){
+				set(0,i,j);
+			}
+		}
+		solvable = true;
+		solverd = false;
 	}
 	
 	/**
@@ -51,7 +65,7 @@ public class Sudoku<E> {
 	 * @return true if 9 unique values are present, none of which are zero. otherwise false.
 	 */
 	
-	public boolean isSolved () {
+	public boolean issolverd () {
 		boolean result = true;
 		
 		for (ArrayList<Integer> a : matrix) {
@@ -87,23 +101,22 @@ public class Sudoku<E> {
 	 */
 	
 	public boolean works (int arg, int col, int row) {
-		System.out.println(col + " "+ row);
 		boolean result = true;
 		
-		for (int i = 1; i < 10; i++) {
+		for (int i = 0; i < 9; i++) {
 				if(get(col, i) == arg) {
 					result = false;
 				}
 		}
 		
-		for (int i = 1; i<10; i++) {
+		for (int i = 0; i<9; i++) {
 				if(get(i, row) == arg) {
 					result = false;
 				}
 		}
 		
-		int ncol = col - 1;
-		int nrow = row - 1;
+		int ncol = col;
+		int nrow = row;
 		if(ncol%3 == 2){ncol = ncol - 2;}
 		if(ncol%3 == 1){ncol = ncol - 1;}
 		if(ncol%3 == 0){ncol = ncol;}
@@ -112,7 +125,7 @@ public class Sudoku<E> {
 		if(nrow%3 == 0){nrow = nrow;}
 		for ( int i = ncol; i < ncol+3; i++ ) {
 			for (int j = nrow; j < nrow+3; j++) {
-					if(get(i+1, j+1) == arg) {
+					if(get(i, j) == arg) {
 					result = false;
 					}
 				}
@@ -137,9 +150,14 @@ public class Sudoku<E> {
 		}
 	} 
 	
+	public boolean solve(){
+		return solver(0,0);
+	}
+	
+	
 	/**
 	 * recursive method.
-	 * evaluates isSolved() and stops recursion if true.
+	 * evaluates issolverd() and stops recursion if true.
 	 * if pre-existing value is found, evaluates whether it is in accordance to the rules using works().
 	 * continues recursion if true, stops and sets solvable = false if false.
 	 * if no value found and solvable is true, attempts to set value from 1-9 according to works().
@@ -147,19 +165,19 @@ public class Sudoku<E> {
 	 * returns false if no value 1-9 for works() returns true, resulting in backtracking.
 	 * @param col index of column.
 	 * @param row index of row.
-	 * @return true if solved false if not.
+	 * @return true if solverd false if not.
 	 */
 	
-	public boolean solve(int col, int row) {
+	private boolean solver(int col, int row) {
 		boolean result = false;
 		
 		int ncol= col;
 		int nrow = row +1;
-		if(nrow == 10) {ncol++; nrow = 1;}
+		if(nrow == 9) {ncol++; nrow = 0;}
 		
 		
-		if(isSolved()) {
-			solved = true;
+		if(issolverd()) {
+			solverd = true;
 			return true;
 		}
 		
@@ -168,7 +186,7 @@ public class Sudoku<E> {
 			set(0, col, row);
 			if (works(temp, col, row)){
 				set(temp, col, row);
-				return solve(ncol, nrow);
+				return solver(ncol, nrow);
 			}
 			else {
 				set(temp,col,row);
@@ -182,14 +200,14 @@ public class Sudoku<E> {
 				if(works(i, col, row) && solvable) {
 					set(i, col, row);
 					
-					if(solve(ncol, nrow)){
+					if(solver(ncol, nrow)){
 						result = true;
 					}
-					else if (i == 9 && !solved){
+					else if (i == 9 && !solverd){
 						set(0, col, row);
 					}
 				}
-				else if (i == 9 && !solved){
+				else if (i == 9 && !solverd){
 					set(0, col, row);
 				}
 				
